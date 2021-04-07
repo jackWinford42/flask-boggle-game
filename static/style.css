@@ -1,0 +1,16 @@
+.board {
+    border: solid 2px blue;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 200%;
+}
+
+.msg.ok {
+    color: white;
+    background-color: green;
+}
+
+.msg.err {
+    color: white;
+    background-color: tomato;
+}
