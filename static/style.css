@@ -3,14 +3,68 @@
     font-family: monospace;
     font-weight: bold;
     font-size: 200%;
+    width: 500px;
+
 }
 
-.msg.ok {
+#timeRemaining {
+    float: left;
+}
+
+#clock {
+    float: right;
+    font-family: monospace;
+    font-weight: bold;
     color: white;
+    background-color: black;
+}
+
+#timeDisplay {
+    overflow: hidden;
+    max-width: 150px;
+}
+
+#boggle {
+    align-content: center;
+    width: 100%;
+}
+
+.ok {
+    color: white;
+    overflow: hidden;
+    display: inline;
+    font-size: medium;
     background-color: green;
+    padding: 5px;
 }
 
-.msg.err {
+.error {
     color: white;
-    background-color: tomato;
+    overflow: hidden;
+    display: inline;
+    font-size: medium;
+    background-color: darkred;
+    padding: 5px;
 }
+
+.add-guess {
+    padding-bottom: 30px;
+}
+
+body {
+    background-color: blanchedalmond;
+    width: 100%;
+}
+td {
+    text-align: center;
+    height: 50px; 
+    width: 50px;
+    background-color: burlywood;
+    /* border: solid 2px blue; */
+}
+/* table, th, td {
+    border: solid 2px blue;
+} */
+/* tbody {
+    border: solid 2px blue;
+} */

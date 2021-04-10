@@ -4,48 +4,71 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>boggle</title>
+        
+        <link rel="stylesheet" 
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" 
+        crossorigin="anonymous">
+
         <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
-        <section id="boggle">
-            <table class="board">
-                <tbody>
-                    {% for row in board %}
-                    <tr>
-                        {% for cell in row %}
-                        <td>{{ cell }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <p>Current High Score:
-                <b>{{ highscore }}</b>
-                in {{ n_plays }} plays
-            </p>
+        <div id="boggle" class="container">
+            <div class="row">
+                <div class="col">
 
-            <p>
-                Score: <b class="score">0</b>
-                Time Remaining: <p id="clock"></p>
-            </p>
-
-            <form class="add-guess">
-                <input class="guessInput" name="guess" autofocus>
-                <button>Enter</button>
-            </form>
-
-            <p id="message" class=""></p>
-
-            <ul class="words">
-
-            </ul>
-        </section>
+                </div>
+                <div class="col">
+                    <table class="board table table-bordered border-dark">
+                        <tbody>
+                            {% for row in board %}
+                            <tr>
+                                {% for cell in row %}
+                                <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        
+                    <p>Current High Score:
+                        <b>{{ highscore }}</b>
+                        in {{ timesPlayed }} plays
+                    </p>
+        
+                    <p>
+                        Score: <b class="score">0</b> <p></p>
+                        <div id="timeDisplay">
+                            <p id="timeRemaining">Time Remaining: </p>
+                            <p id="clock"> </p>
+                        </div>
+                    </p>
+        
+                    <form class="add-guess">
+                        <input class="guessInput" name="guess" autofocus>
+                        <button class="btn btn-primary">Enter</button>
+                    </form>
+        
+                    <p id="message" class=""></p>
+        
+                    <ul class="answers">
+        
+                    </ul>
+                </div>
+                <div class="col">
+    
+                </div>
+            </div>
+        </div>
         <script src="http://unpkg.com/jquery"></script>
         <script src="https://unpkg.com/axios@0.19.0/dist/axios.js"></script>
-        <!-- <script src="/static/boggle.js"></script> -->
-        <script type="text/javascript" src="/static/boggle.js?u={{ last_updated }}"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+        <script src="/static/boggle.js"></script>
+        <!-- <script type="text/javascript" src="/static/boggle.js?u={{ last_updated }}"></script> -->
         <script>
-            let game = new BoggleGame("boggle", 60);
+            let game = new BoggleGame("boggle");
         </script>
     </body>
 </html>

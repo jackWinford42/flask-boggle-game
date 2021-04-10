@@ -3,41 +3,44 @@ from boggle import Boggle
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "secretKey"
+app.config['SECRET_KEY'] = "VerySecret"
 
-boggle_game = Boggle()
+boggle = Boggle()
 
-@app.route('/')
-def start_page():
-    """Display the home/start page of the survey app"""
+@app.route("/")
+def home():
+    """Display the home page of the survey app
+    with full game interface"""
 
-    game_board = boggle_game.make_board()
-    session['g_board'] = game_board
-    highscore = session.get("highscore", 0)
-    n_plays = session.get("n_plays", 0)
+    #initial one time setup of essential variables
+    session["board"] = boggle.make_board()
+    session["highscore"] = 0
+    session["timesPlayed"] = 0
 
     return render_template("board.html",
-                            board=game_board,
-                            highscore=highscore,
-                            n_plays=n_plays)
+                            board=session["board"],
+                            highscore=session["highscore"],
+                            timesPlayed=session["timesPlayed"])
 
-@app.route('/check-word')
-def check_word():
+@app.route("/verify-guess")
+def verify():
     """Check a guessed word for validity"""
-    word = request.args["word"]
-    board = session["g_board"]
-    response = boggle_game.check_valid_word(board, word)
+    guess = request.args["word"]
 
-    return jsonify({'result': response})
+    validity = boggle.check_valid_word(session["board"], guess)
 
-@app.route("/post-score", methods=["POST"])
-def post_score():
-    """At the appropriate time post the score for the current game"""
+    return jsonify({'result': validity})
+
+@app.route("/score-game", methods=["POST"])
+def score():
+    """At the appropriate time, score the current game"""
+
     score = request.json["score"]
-    highscore = session.get("highscore", 0)
-    n_plays = session.get("n_plays", 0)
+    times_played = session.get("timesPlayed", 0)
 
-    session['n_plays'] = n_plays + 1
-    session['highscore'] = max(score, highscore)
+    session["timesPlayed"] = times_played + 1
 
-    return jsonify(brokeRecord = score > highscore)
+    #set highscore to the max between current score and the highscore
+    session["highscore"] = max(score, session.get("highscore", 0))
+
+    return jsonify(brokeRecord = score > session["highscore"])

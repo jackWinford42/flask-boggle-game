@@ -1,72 +1,89 @@
 class BoggleGame {
-    constructor(boardId, seconds = 60) {
-        this.secs = seconds;
-        this.showTimer();
-
-        this.score = 0;
-        this.words = new Set();
+    constructor(boardId) {
         this.board = $("#" + boardId);
+        this.secs = 60;
+        this.showTimer();
+        this.score = 0;
+        this.answers = new Set();
 
         //setInterval function allows clocklogic to run every second
         this.clock = setInterval(this.clockLogic.bind(this), 1000);
 
-        $(".add-guess", this.board).on("submit", this.handleSubmit.bind(this));
+        $(".add-guess", this.board).on("submit", this.serveWord.bind(this));
     }
     
     async clockLogic() {
         this.secs = this.secs - 1;
         this.showTimer();
-
-        if (this.secs < 0) {
+        
+        if (this.secs < 1) {
             //when the timer gets past zero end the game
             clearInterval(this.clock);
+
             await this.scoreGame();
         }
     }
 
     showTimer() {
-        $("#clock", this.board).text(this.secs);
+        if (this.secs < 10) {
+            $("#clock", this.board).text("0" + this.secs);
+        } else {
+            $("#clock", this.board).text(this.secs);
+        }
     }
     
     displayMessage(txt, cls) {
-        $("#message").text(txt).removeClass().addClass(`${cls}`);
+        $("#message").text(txt)
+
+        $("#message").removeClass()
+
+        $("#message").addClass(`${cls}`);
     }
 
-    async handleSubmit(evt) {
-        evt.preventDefault();
+    serveWord(e) {
+        e.preventDefault();
 
-        const $word = $(".guessInput", this.board);
-    
-        let word = $word.val();
-        if (!word) {
-            return;
-        }
-        
-        if (this.words.has(word)) {
-            this.displayMessage(`${word} has already been found`, "err")
+        const answer = $(".guessInput", this.board).val();
+
+        $(".guessInput", this.board).val("").focus();
+
+        //do nothing if answer is blank
+        if (answer === "") {
             return;
         }
 
-        const resp = await axios.get("/check-word", { params: { word: word}});
-        
-        if (resp.data.result === "not-word") {
-            this.displayMessage(`${word} cannot be found in the dictionary`, "err");
-        } else if (resp.data.result === "not-on-board") {
-            this.displayMessage(`${word} cannot be found on the board`, "err");
+        //if answer has been guessed previously
+        if (this.answers.has(answer)) {
+            this.displayMessage(`${word} has already been found`, "error");
+            return;
+        }
+
+        this.verifyAnswer(answer);
+    }
+
+    async verifyAnswer(answer) {
+
+        const response = await axios.get("/verify-guess", { params: { word: answer}});
+
+        if (response.data.result === "not-on-board" || response.data.result === "not-word") {
+
+            this.displayMessage(`${answer} is invalid (either not a word or on the board) guess again`, "error");
         } else {
-            $(".words", this.board).append($("<li>", { text: word }));
-            this.score += word.length;
-            this.displayMessage();
-            this.words.add(word);
-            this.displayMessage(`Added: ${word}`, "ok");
+
+            $(".answers", this.board).append($("<li>", { text: answer }));
+            this.score += answer.length;
+            $(".score", this.board).text(this.score);
+            this.answers.add(answer);
+            this.displayMessage(`Successfully listed and scored: ${answer}`, "ok");
         }
 
-        $word.val("").focus();
+        
     }
 
     async scoreGame() {
-        $(".add-word", this.board).hide();
-        const resp = await axios.post("/post-score", { score: this.score });
+        $(".add-guess", this.board).hide();
+        const resp = await axios.post("/score-game", { score: this.score });
+
         if (resp.data.brokeRecord) {
             this.displayMessage(`You set a new record!: ${this.score}`, "ok");
         } else {
